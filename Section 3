@@ -35,26 +35,8 @@ fetch('https://6f6twe9e95.execute-api.eu-north-1.amazonaws.com/default/getTfnDat
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
     
-    var r2s = L.icon({
-        iconUrl: 'https://tfn.co.za/wp-content/uploads/2024/09/r2s.svg',
-        iconSize: [34, 44.5],
-        iconAnchor: [17, 44.5],
-        popupAnchor: [0, -45]
-    });
     var r2sPlus = L.icon({
         iconUrl: 'https://tfn.co.za/wp-content/uploads/2024/09/r2sPlus.svg',
-        iconSize: [34, 44.5],
-        iconAnchor: [17, 44.5],
-        popupAnchor: [0, -45]
-    });
-    var ss = L.icon({
-        iconUrl: 'https://tfn.co.za/wp-content/uploads/2024/09/newCs.svg',
-        iconSize: [34, 44.5],
-        iconAnchor: [17, 44.5],
-        popupAnchor: [0, -45]
-    });
-    var cb = L.icon({
-        iconUrl: 'https://tfn.co.za/wp-content/uploads/2024/09/cb.svg',
         iconSize: [34, 44.5],
         iconAnchor: [17, 44.5],
         popupAnchor: [0, -45]
@@ -68,29 +50,14 @@ fetch('https://6f6twe9e95.execute-api.eu-north-1.amazonaws.com/default/getTfnDat
     });
     
     // Iterate through the locations array and add markers to the map
-    locations.forEach(location => {
+    locations
+      .filter(location => location.isRefuel2SaveDepot && location.hasRefuel2SavePlusPromotions)
+      .forEach(location => {
       const GPSLatitude = location.GPSLatitude;
       const GPSLongitude = location.GPSLongitude;
-      let mapIcon, site, price;
-      if (!location.IsInSouthAfrica) {
-      	mapIcon = cb;
-        site = "Cross Border";
-        price = `${location.price}`;
-      } else if (location.isRefuel2SaveDepot) {
-            if (location.hasRefuel2SavePlusPromotions) {
-              	mapIcon = r2sPlus;
-                site = "Refuel2Save+";
-                price = `${location.price}`;
-            } else {
-                mapIcon = r2s;
-                site = "Refuel2Save";
-                price = `${location.price}`;
-            }
-      } else if (!location.isRefuel2SaveDepot && location.IsInSouthAfrica) {
-      	mapIcon = ss;
-        site = "Classic";
-        price = `${location.price}`;
-      }
+      let mapIcon = r2sPlus;
+      let site = "Refuel2Save+";
+      let price = `${location.price}`;
       let products = "<strong>Products</strong><br><ul>";
       [...location.Products].forEach((prod) => {
           products += `<li>${prod.ProductTitle}</li>`;
